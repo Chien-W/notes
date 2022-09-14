@@ -590,4 +590,197 @@ ps：rm命令可以删除多个目录，需谨慎使用
 ##### 9、网络配置文件
 
 - ifcfg-eth0   //网卡配置文件
+
+  ```shell
+  # cd /etc/sysconfig/network-scripts
+  # vim ifcfg-eth0
+  ```
+
 - /etc/hosts  //主机配置文件
+
+  ------
+
+  
+
+## 九、软件包管理器
+
+##### 1、软件包管理器
+
+- 包管理器是方便软件安装、卸载，解决软件依赖关系的重要工具
+- CentOS、RedHat使用yum包管理器，软件安装包格式为rpm
+- Debian、Ubuntu使用apt包管理器，软件安装包格式为deb
+
+
+
+##### 2、rpm包格式
+
+- rpm包格式
+- $\color{#FF00FF}{vim-common}$ -$\color{#FF7D00}{7.4.10-5}$ .$\color{#00FF00}{el7}$ .$\color{#00FFFF}{x86\_64}$ .rpm
+
+​			$\color{#FF00FF}{软件名称}$ 	$\color{#FF7D00}{软件版本}$  $\color{#00FF00}{系统版本}$  $\color{#00FFFF}{平台}$ 
+
+
+
+##### 3、yum命令常用选项
+
+-  install 安装软件包
+-  remove 卸载软件包
+-  list | grouplist 查看软件包
+-  update 升级软件包
+
+
+
+##### 4、升级内核
+
+1. rpm格式内核
+
+   -  查看内核版本
+
+     ```shell
+     # uname -r
+     ```
+   
+   - 升级内核版本
+   
+     ```shell
+     # yum install kernel-3.10.0
+     ```
+   
+      -  升级已安装的其他软件包和补丁
+        ```shell
+        # yum update
+        ```
+   
+
+2. 源代码编译安装内核
+
+   -  安装依赖包
+     
+     ```shell
+     # yum install gcc gcc-c++ make ncurses-devel openssl-devel elfutils-libelf-devel
+     ```
+     
+   - 下载并解压缩内核
+   
+     ```shell
+     https://www.kernel.org
+     # tar xvf linux-5.1..10.tar.xz -C /usr/src/kernels
+     ```
+   
+   -  配置内核编译参数
+   
+     ```shell
+     # cd /usr/src/kernel/linux-5.1.10/
+     # make menucofig | allyesconfig | allnoconfig
+     ```
+   
+   - 使用当前系统内核配置
+   
+     ```shell
+     # cp /boot/config-kernelversion.platform /usr/src/kernels/linux-5.1.10/.config
+     ```
+   
+   - 查看CPU
+   
+     ```shell
+     # lscpu
+     ```
+   
+   - 编译
+   
+     ```shell
+     # make-j2 all
+     ```
+   
+   -  安装内核
+   
+     ```shell
+     # make modules_install
+     # make install
+     ```
+
+------
+
+
+
+## 十、grub引导程序
+
+##### 1、grub 配置文件
+
+-  /etc/default/grub
+-  /etc/grub.d/
+-  /boot/grub2/grub.cfg
+-  grub2-mkconfig -o /boot/grub2/grub.cfg
+
+------
+
+
+
+## 十一、进程管理
+
+##### 1、进程的概念
+
+- 进程——运行中的程序，从程序开始运行到终止的整个生命周期是可管理的
+  - C程序的启动是从main函数开始的
+    - int main(int agrc, char*argv[])
+    - 终止的方式并不唯一，分为正常终止和异常终止
+      - 正常终止也分为从main返回、调用exit等方式
+      - 异常终止分为调用abort、接受信号等
+
+
+
+##### 2、进程的查看命令
+
+- 查看命令
+
+  ```shell
+  # ps
+  # pstree
+  # top
+  ```
+
+- 结论 
+
+  - 进程也是树形结构
+  - 进程和权限有着密不可分的关系 
+
+
+
+##### 3、进程的优先级调整
+
+-  调整优先级
+
+  - nice 范围从-20到19，值越小优先级越高，抢占资源就越多
+  - renice 重新设置优先级
+
+- 进程的作业控制
+
+  - jobs
+
+    ```shell
+    # jobs //查看所有作业
+    # ./a.sh &  //将程序挂载在后台
+    # fg 1  //fg 作业号，将后台作业调转至前台
+    # ctrl +z //将作业展示停止，但不销毁进程
+    # bg 1  //bg 作业号，将作业调度启动至后台
+    ```
+
+  - & 符号 //将进程挂在后台执行
+
+##### 4、进程间通信
+
+- 信号是进程间通信方式之一，典型用法是：终端用户输入中断命令，通过信号机制停止一个程序的运行。
+- 使用信号的常用快捷键和命令
+  - kill -l
+    - SIGINT  通知前台进程组终止进程 ctrl + c
+    - SIGKILL 立即结束程序，不能被阻塞和处理 kill -9 pid
+
+##### 5、守护进程
+
+- 使用 nohup 与 & 符号配合运行一个目录
+  - nphup 命令使进程忽略 hangup （挂起）信号
+- 使用 screen 命令
+  - screen 进入 screen 环境
+  - ctrl +a d 退出（detached）screen 环境
+  - screen -ls 查看 screen 的会话
+  - screen -r sessionid 恢复会话
